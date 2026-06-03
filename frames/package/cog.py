@@ -229,38 +229,38 @@ class FramesCog(commands.Cog):
 
         # ── FilteringChoices + filter_balls ───────────────────────────────────
 
-        import ballsdex.core.utils.enums as enums_module
-        import ballsdex.core.utils.sorting as sorting_module
-        from ballsdex.core.utils.enums import FilteringChoices
-
-        # Add the new enum member (only if not already present, e.g. reload safety)
-        if not hasattr(FilteringChoices, "frame"):
-            new_member = object.__new__(FilteringChoices)
-            new_member._name_ = "frame"
-            new_member._value_ = "frame"
-            FilteringChoices._value2member_map_["frame"] = new_member  # type: ignore[attr-defined]
-            FilteringChoices._member_map_["frame"] = new_member  # type: ignore[attr-defined]
-            FilteringChoices._member_names_.append("frame")  # type: ignore[attr-defined]
-
-        original_filter_balls = sorting_module.filter_balls
-
-        def patched_filter_balls(filter, queryset, guild_id=None):
-            if filter == FilteringChoices.frame: # type: ignore
-                today_key = date.today().strftime("%m-%d")
-                return queryset.filter(
-                    ball__capacity_logic__has_key=today_key
-                )
-            return original_filter_balls(filter, queryset, guild_id=guild_id)
-
-        self._originals["filter_balls"] = sorting_module.filter_balls
-        sorting_module.filter_balls = patched_filter_balls
-
-        # re-bind in the balls cog's module if already imported
-        try:
-            import ballsdex.packages.balls.cog as balls_cog_module
-            balls_cog_module.filter_balls = patched_filter_balls  # type: ignore[attr-defined]
-            self._originals["balls_cog_filter_balls"] = original_filter_balls
-        except Exception:
-            pass
-
+        # import ballsdex.core.utils.enums as enums_module
+        # import ballsdex.core.utils.sorting as sorting_module
+        # from ballsdex.core.utils.enums import FilteringChoices
+        #
+        # # Add the new enum member (only if not already present, e.g. reload safety)
+        # if not hasattr(FilteringChoices, "frame"):
+        #     new_member = object.__new__(FilteringChoices)
+        #     new_member._name_ = "frame"
+        #     new_member._value_ = "frame"
+        #     FilteringChoices._value2member_map_["frame"] = new_member  # type: ignore[attr-defined]
+        #     FilteringChoices._member_map_["frame"] = new_member  # type: ignore[attr-defined]
+        #     FilteringChoices._member_names_.append("frame")  # type: ignore[attr-defined]
+        #
+        # original_filter_balls = sorting_module.filter_balls
+        #
+        # def patched_filter_balls(filter, queryset, guild_id=None):
+        #     if filter == FilteringChoices.frame: # type: ignore
+        #         today_key = date.today().strftime("%m-%d")
+        #         return queryset.filter(
+        #             ball__capacity_logic__has_key=today_key
+        #         )
+        #     return original_filter_balls(filter, queryset, guild_id=guild_id)
+        #
+        # self._originals["filter_balls"] = sorting_module.filter_balls
+        # sorting_module.filter_balls = patched_filter_balls
+        #
+        # # re-bind in the balls cog's module if already imported
+        # try:
+        #     import ballsdex.packages.balls.cog as balls_cog_module
+        #     balls_cog_module.filter_balls = patched_filter_balls  # type: ignore[attr-defined]
+        #     self._originals["balls_cog_filter_balls"] = original_filter_balls
+        # except Exception:
+        #     pass
+        #
         log.info("Frames patches applied.")
